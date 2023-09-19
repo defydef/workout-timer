@@ -1,43 +1,30 @@
-import { useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
-function Calculator({ time }) {
-  // Will be be AM or PM
-  const partOfDay = time.slice(-2);
-  const workouts = useMemo(
-    function () {
-      return [
-        {
-          name: "Full-body workout",
-          numExercises: partOfDay === "AM" ? 9 : 8,
-        },
-        {
-          name: "Arms + Legs",
-          numExercises: 6,
-        },
-        {
-          name: "Arms only",
-          numExercises: 3,
-        },
-        {
-          name: "Legs only",
-          numExercises: 4,
-        },
-        {
-          name: "Core only",
-          numExercises: partOfDay === "AM" ? 5 : 4,
-        },
-      ];
-    },
-    [partOfDay]
-  );
+function Calculator({ workouts }) {
   const [number, setNumber] = useState(workouts.at(0).numExercises);
   const [sets, setSets] = useState(3);
   const [speed, setSpeed] = useState(90);
   const [durationBreak, setDurationBreak] = useState(5);
 
-  const duration = (number * sets * speed) / 60 + (sets - 1) * durationBreak;
+  // const duration = (number * sets * speed) / 60 + (sets - 1) * durationBreak;
+  const [duration, setDuration] = useState(0);
   const mins = Math.floor(duration);
   const seconds = (duration - mins) * 60;
+
+  useEffect(
+    function () {
+      setDuration((number * sets * speed) / 60 + (sets - 1) * durationBreak);
+    },
+    [number, sets, speed, durationBreak]
+  );
+
+  function handleInc() {
+    setDuration((duration) => Math.floor(duration) + 1);
+  }
+
+  function handleDec() {
+    setDuration((duration) => (duration > 1 ? Math.ceil(duration) - 1 : 0));
+  }
 
   return (
     <>
@@ -88,16 +75,16 @@ function Calculator({ time }) {
         </div>
       </form>
       <section>
-        <button onClick={() => {}}>–</button>
+        <button onClick={handleDec}>–</button>
         <p>
           {mins < 10 && "0"}
           {mins}:{seconds < 10 && "0"}
           {seconds}
         </p>
-        <button onClick={() => {}}>+</button>
+        <button onClick={handleInc}>+</button>
       </section>
     </>
   );
 }
 
-export default Calculator;
+export default memo(Calculator);
