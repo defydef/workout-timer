@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import clickSound from "../ClickSound.m4a";
 
 const SoundContext = createContext();
@@ -6,19 +6,21 @@ const SoundContext = createContext();
 function SoundProvider({ children }) {
   const [allowSound, setAllowSound] = useState(true);
 
-  const playSound = function () {
-    if (!allowSound) return;
-    const sound = new Audio(clickSound);
-    sound.play();
-  };
+  const playSound = useCallback(
+    function () {
+      if (!allowSound) return;
+      const sound = new Audio(clickSound);
+      sound.play();
+    },
+    [allowSound]
+  );
 
-  function handleSound() {
+  const handleSound = useCallback(function handleSound() {
     setAllowSound((allow) => !allow);
-    playSound();
-  }
+  }, []);
 
   return (
-    <SoundContext.Provider value={{ handleSound, allowSound }}>
+    <SoundContext.Provider value={{ handleSound, playSound, allowSound }}>
       {children}
     </SoundContext.Provider>
   );
@@ -28,7 +30,7 @@ function useSound() {
   const context = useContext(SoundContext);
   if (context === undefined)
     throw new Error(
-      "useCities is undefined because it is defined inside the children component of App"
+      "useSound is undefined because it is defined inside the children component of App"
     );
   return context;
 }

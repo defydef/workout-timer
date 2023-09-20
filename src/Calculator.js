@@ -1,21 +1,32 @@
 import { memo, useEffect, useState } from "react";
+import { useSound } from "./contexts/SoundContext";
 
 function Calculator({ workouts }) {
   const [number, setNumber] = useState(workouts.at(0).numExercises);
   const [sets, setSets] = useState(3);
   const [speed, setSpeed] = useState(90);
   const [durationBreak, setDurationBreak] = useState(5);
+  const [duration, setDuration] = useState(0);
 
   // const duration = (number * sets * speed) / 60 + (sets - 1) * durationBreak;
-  const [duration, setDuration] = useState(0);
+
   const mins = Math.floor(duration);
   const seconds = (duration - mins) * 60;
+
+  const { playSound } = useSound();
 
   useEffect(
     function () {
       setDuration((number * sets * speed) / 60 + (sets - 1) * durationBreak);
     },
     [number, sets, speed, durationBreak]
+  );
+
+  useEffect(
+    function () {
+      playSound();
+    },
+    [duration, playSound]
   );
 
   function handleInc() {

@@ -9,10 +9,10 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    <App>
-      <SoundProvider>
+    <SoundProvider>
+      <App>
         <ToggleSounds />
-      </SoundProvider>
-    </App>
+      </App>
+    </SoundProvider>
   </React.StrictMode>
 );
